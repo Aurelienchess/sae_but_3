@@ -130,7 +130,7 @@ npm test
 ## Architecture & Déploiement (CI/CD)
 
 ### Gestion Dynamique de l'API
-On code pas d'IP en dur) :
+On code pas d'IP en dur :
 * **En Local :** Il utilise le fichier `.env`.
 * **En Prod :** L'IP Azure est injectée automatiquement dans l'image Docker par GitLab CI au moment du build.
 
@@ -212,7 +212,7 @@ Conformément aux contraintes du projet, voici les motivations derrière nos cho
 * **Pourquoi :** L'utilisation de **Docker** garantit l'isomorphisme entre le développement et la production sur Azure. Chaque composant (Front, Back, BDD, MQTT, Node-RED, Glances, SonarQube) est isolé, facilitant la maintenance et l'évolution indépendante des services.
 
 ### 2. Communication IoT (MQTT & Mosquitto)
-* **Pourquoi :** Le protocole **MQTT** est le standard industriel de l'IoT en raison de sa légèreté. **Mosquitto** a été choisi pour sa très faible consommation de ressources sur le serveur Azure tout en gérant efficacement des centaines de messages par seconde.
+* **Pourquoi :** Le protocole **MQTT** est le standard industriel de l'IoT en raison de sa légèreté. **Mosquitto** a été choisi pour sa très faible consommation de ressources sur le serveur Azure tout en gérant efficacement des centaines de messages par seconde. Mais également le publish/suscribe qui permet de ne pas connaître le destinataire de nos messages ce qui simplifie l'échange.
 
 ### 3. Logique et Simulation (Node-RED)
 * **Pourquoi :** **Node-RED** permet de prototyper rapidement des flux de données complexes (mélange de données capteurs et APIs météo externes) sans avoir à coder une infrastructure de traitement de flux lourde à partir de zéro.
