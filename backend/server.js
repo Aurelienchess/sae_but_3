@@ -437,6 +437,49 @@ app.put('/api/users/:id', async (req, res) => {
     res.status(500).json({ success: false, error: "Erreur serveur" });
   }
 });
+
+// Route pour supprimer un compte utilisateur
+app.delete('/api/users/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Vérifier si l'utilisateur existe
+    const [user] = await userDB.query(
+      "SELECT id FROM users WHERE id = ?",
+      [userId]
+    );
+
+    if (user.length === 0) {
+      return res.status(404).json({ error: "Utilisateur introuvable" });
+    }
+
+    // Supprimer les alertes de l'utilisateur
+    await userDB.query(
+      "DELETE FROM user_alerts WHERE user_id = ?",
+      [userId]
+    );
+
+    // Supprimer l'utilisateur
+    await userDB.query(
+      "DELETE FROM users WHERE id = ?",
+      [userId]
+    );
+
+    console.log(`Compte utilisateur ${userId} supprimé avec succès`);
+    
+    res.json({
+      success: true,
+      message: "Compte supprimé avec succès"
+    });
+  } catch (error) {
+    console.error("Erreur suppression compte:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Erreur serveur lors de la suppression du compte" 
+    });
+  }
+});
+
 app.get('/api/latest-sensors', async (req, res) => {
   try {
     const [rows] = await db.query(`

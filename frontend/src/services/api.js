@@ -1,5 +1,6 @@
 const API_URL = "https://my.meteoblue.com/packages/basic-1h_basic-day";
-const API_KEY = "RvXWZzPSbjUrpEc0";
+const API_KEY = "RvXWZzPSbjUrpEc0"; 
+//Nouvelle clé pour activer un nouveau crédit d'utilisation de l'api Meteoblue : qvujckmCYiIHeysd 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const BACKEND_URL = `${BASE_URL}/api`;
 export async function getWeather() {

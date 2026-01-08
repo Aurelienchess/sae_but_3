@@ -4,10 +4,11 @@ const HARDCODED_USER_EMAIL = "saebut3@gmail.com";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-export default function Settings({ onClose, onLogout }) {
+export default function Settings({ onClose, onLogout, user }) {
   const [bugReportType, setBugReportType] = useState("bug");
   const [bugDescription, setBugDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [gradientColor, setGradientColor] = useState("");
   const appVersion = "1.2.3";
   const buildDate = "20 octobre 2025";
@@ -23,6 +24,7 @@ export default function Settings({ onClose, onLogout }) {
     const random = gradients[Math.floor(Math.random() * gradients.length)];
     setGradientColor(random);
   }, []);
+
   const handleSubmitReport = async () => {
     if (!bugDescription.trim()) {
       alert(
@@ -42,7 +44,6 @@ export default function Settings({ onClose, onLogout }) {
         userEmail: HARDCODED_USER_EMAIL,
       };
 
-      // Envoi au backend
       const response = await fetch(`${API_URL}/api/submit-report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -70,6 +71,69 @@ export default function Settings({ onClose, onLogout }) {
         if (onLogout) {
             onLogout();
         }
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    // Vérification que userId est bien défini
+    if (!user?.id) {
+      alert("Erreur : Impossible d'identifier votre compte. Veuillez vous reconnecter.");
+      console.error("userId non défini dans Settings");
+      return;
+    }
+
+    const confirmMessage = 
+      "⚠️ ATTENTION ⚠️\n\n" +
+      "Vous êtes sur le point de supprimer définitivement votre compte.\n\n" +
+      "Cette action est IRRÉVERSIBLE et entraînera :\n" +
+      "• La suppression de toutes vos données\n" +
+      "• La perte de vos abonnements aux zones\n" +
+      "• La suppression de votre historique\n\n" +
+      "Voulez-vous vraiment continuer ?";
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    // Deuxième confirmation
+    const finalConfirm = window.confirm(
+      "Dernière confirmation :\n\n" +
+      "Êtes-vous ABSOLUMENT SÛR de vouloir supprimer votre compte ?\n\n" +
+      "Cette action ne peut pas être annulée."
+    );
+
+    if (!finalConfirm) {
+      return;
+    }
+
+    setIsDeleting(true);
+
+    try {
+      console.log(`Tentative de suppression du compte avec userId: ${user.id}`);
+      
+      const response = await fetch(`${API_URL}/api/users/${user.id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await response.json();
+      console.log("Réponse serveur:", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Erreur lors de la suppression");
+      }
+
+      alert("Votre compte a été supprimé avec succès.");
+      
+      // Déconnexion après suppression
+      if (onLogout) {
+        onLogout();
+      }
+    } catch (error) {
+      console.error("Erreur suppression compte:", error);
+      alert(`Erreur lors de la suppression du compte : ${error.message}`);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -118,22 +182,31 @@ export default function Settings({ onClose, onLogout }) {
     backgroundColor: "#dc2626",
   };
 
+  const criticalButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: "#991b1b",
+    fontWeight: 600,
+  };
+
   return (
     <div style={containerStyle}>
-      <h2 style={{ marginBottom: 10, fontWeight: "normal" }}>{t('settingsPage.title')}</h2>
+      <h2 style={{ marginBottom: 10, fontWeight: "normal" }}>Paramètres</h2>
       <p style={{ marginBottom: 20, color: "#555" }}>
         Gérez les paramètres de votre application.
       </p>
+      
       <div style={sectionStyle}>
         <h3 style={{ fontWeight: "normal" }}>Informations sur l'application</h3>
         <p>Version: {appVersion}</p>
         <p>Date de build: {buildDate}</p>
         <p>Environnement: Production</p>
       </div>
+      
       <div style={sectionStyle}>
         <h3 style={{ fontWeight: "normal" }}>État du serveur</h3>
         <p>Statut: {serverStatus}</p>
       </div>
+      
       <div style={sectionStyle}>
         <h3 style={{ fontWeight: "normal" }}>Rapport / Suggestions</h3>
         <p style={{ fontSize: 12, color: "#555", marginBottom: 10 }}>
@@ -167,6 +240,7 @@ export default function Settings({ onClose, onLogout }) {
           {isSubmitting ? "Envoi..." : "Envoyer"}
         </button>
       </div>
+      
       <div style={sectionStyle}>
         <h3 style={{ fontWeight: "normal" }}>Déconnexion</h3>
         <p style={{ fontSize: 12, color: "#555", marginBottom: 10 }}>
@@ -177,6 +251,32 @@ export default function Settings({ onClose, onLogout }) {
           Se déconnecter
         </button>
       </div>
+
+      {/* Nouvelle section : Suppression de compte */}
+      <div style={{...sectionStyle, borderLeft: "4px solid #991b1b"}}>
+        <p style={{ fontSize: 12, color: "#555", marginBottom: 10 }}>
+          <strong>Attention :</strong> La suppression de votre compte est définitive 
+          et irréversible. Toutes vos données, abonnements et historiques seront 
+          définitivement supprimés.
+        </p>
+        {!user?.id && (
+          <p style={{ fontSize: 12, color: "#dc2626", marginBottom: 10, fontWeight: "bold" }}>
+            Erreur: Identifiant utilisateur manquant. Veuillez vous reconnecter.
+          </p>
+        )}
+        <button 
+          onClick={handleDeleteAccount} 
+          disabled={isDeleting || !user?.id}
+          style={{
+            ...criticalButtonStyle,
+            opacity: (!user?.id || isDeleting) ? 0.5 : 1,
+            cursor: (!user?.id || isDeleting) ? "not-allowed" : "pointer"
+          }}
+        >
+          {isDeleting ? "Suppression en cours..." : "Supprimer mon compte"}
+        </button>
+      </div>
+
       {onClose && (
         <div style={{ textAlign: "center", marginTop: 10 }}>
           <button

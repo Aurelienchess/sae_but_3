@@ -117,7 +117,7 @@ export function Sidebar({
             }}
           />
           <div style={{ fontWeight: "bold", fontSize: "16px", lineHeight: "1.2" }}>
-             Physis
+             Projet IOT 2025
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "-5px" }}>

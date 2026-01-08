@@ -66,6 +66,7 @@ Accessible une fois `docker compose up` lancé sur votre machine.
 * **Docker** et **Docker Compose** installés.
 * **Node.js** (uniquement pour lancer les scripts de tests/scan).
 * **Git**.
+* **Docker Desktop** et il faut l'avoir démarré.
 
 ### 2.Configuration Initiale (Indispensable)
 Pour que le frontend puisse communiquer avec le backend, vous devez créer un fichier d'environnement.
@@ -76,10 +77,10 @@ Pour que le frontend puisse communiquer avec le backend, vous devez créer un fi
 
 ```properties
 # Option A : Utiliser les données du serveur Azure sans lancer le backend local
-VITE_API_URL=[http://20.250.161.72:3000](http://20.250.161.72:3000)
+VITE_API_URL=http://20.250.161.72:3000
 
 # Option B : Travailler 100% en local (Nécessite le backend Docker lancé)
-# VITE_API_URL=http://localhost:3000
+VITE_API_URL=http://localhost:3000
 ```
 
 ### 3. Préparation pour Windows (WSL2)

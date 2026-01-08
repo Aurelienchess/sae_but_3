@@ -682,7 +682,7 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "{\"temperature\":5,\"humidite\":95,\"gaz\":210,\"latitude\":45.5,\"longitude\":2.3,\"deviceId\":\"ESP8266_Zone_B\"}",
+        "payload": "{\"temperature\":20,\"humidite\":5,\"gaz\":300,\"latitude\":45.5,\"longitude\":2.3,\"deviceId\":\"ESP8266_Zone_B\"}",
         "payloadType": "json",
         "x": 310,
         "y": 440,

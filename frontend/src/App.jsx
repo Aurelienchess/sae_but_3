@@ -152,7 +152,12 @@ export default function App() {
                         onUserUpdate={handleUserUpdate}
                     />
                 )}
-                {activeView === "settings" && <Settings onLogout={handleLogout} />}
+                {activeView === "settings" && (
+                    <Settings 
+                        onLogout={handleLogout}
+                        user={user}
+                    />
+                )}
             </main>
         </div>
     );
